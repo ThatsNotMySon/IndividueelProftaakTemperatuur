@@ -117,7 +117,7 @@ mcp23017_err_t mcp23017_read_register(mcp23017_t *mcp, mcp23017_reg_t reg, mcp23
 	cmd = i2c_cmd_link_create();
 	i2c_master_start(cmd);
 	i2c_master_write_byte(cmd, (mcp->i2c_addr << 1) | I2C_MASTER_READ, ACK_CHECK_EN);
-	i2c_master_read_byte(cmd, data, 0);
+	i2c_master_read_byte(cmd, data, 1);
 	ret =i2c_master_cmd_begin(mcp->port, cmd, 1000 / portTICK_RATE_MS);
 	i2c_cmd_link_delete(cmd);
 	if( ret == ESP_FAIL ) {

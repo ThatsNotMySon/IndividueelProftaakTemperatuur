@@ -53,7 +53,11 @@ static void i2c_master_init(void)
 	mcp23017.sda_pullup_en = GPIO_PULLUP_ENABLE;
 	mcp23017.scl_pullup_en = GPIO_PULLUP_ENABLE;
     i2c_param_config(i2c_master_port, &conf);
-    i2c_driver_install(i2c_master_port, conf.mode, I2C_MASTER_RX_BUF_LEN, I2C_MASTER_TX_BUF_LEN, 0);
+    i2c_driver_install(i2c_master_port,
+    conf.mode,
+    I2C_MASTER_RX_BUF_LEN,
+    I2C_MASTER_TX_BUF_LEN,
+    0);
 }
 
 // WARNING: ESP32 does not support blocking input from stdin yet, so this polls

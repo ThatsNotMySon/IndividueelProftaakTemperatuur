@@ -83,19 +83,41 @@ int _readSensorTemp(uint8_t pin, uint8_t wakeupDelay)
 
     //request
     //Error with GPIO expander, unable to make it work in available time
-    mcp23017_write_register(&mcp23017, MCP23017_IODIR, GPIOA, 0x00);
-    mcp23017_set_bit(&mcp23017, 0, MCP23017_GPIO, GPIOA);
+    mcp23017_write_register(mcp23017,
+    MCP23017_IODIR,
+    GPIOA,
+    0x00);
+    mcp23017_set_bit(mcp23017,
+    0,
+    MCP23017_GPIO,
+    GPIOA);
     vTaskDelay(50);
-    mcp23017_set_bit(&mcp23017, 1, MCP23017_GPIO, GPIOA);
+    mcp23017_set_bit(mcp23017,
+    1,
+    MCP23017_GPIO,
+    GPIOA);
     vTaskDelay(50);
-    mcp23017_write_register(&mcp23017, MCP23017_IODIR, GPIOA, 0xFF);
+    mcp23017_write_register(mcp23017,
+    MCP23017_IODIR,
+    GPIOA,
+    0xFF);
 
     //get output
     uint8_t data = 0x00;
-    mcp23017_read_register(&mcp23017, MCP23017_GPIO, GPIOA, &data);
+    mcp23017_read_register(mcp23017,
+    MCP23017_GPIO,
+    GPIOA,
+    &data);
     
-    mcp23017_write_register(&mcp23017, MCP23017_IODIR, GPIOA, 0x00);
-    mcp23017_set_bit(&mcp23017, 1, mcp23017_GPIO, GPIOA);
+    mcp23017_write_register(mcp23017,
+    MCP23017_IODIR,
+    GPIOA,
+    0x00);
+    
+    mcp23017_set_bit(mcp23017,
+    1,
+    MCP23017_GPIO,
+    GPIOA);
 
     return TEMPSENSOR_OK;
 }

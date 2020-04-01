@@ -1,7 +1,5 @@
 /*
 Written by Tom Kaasenbrood
-Commented lines: 
-Code Lines:
 */
 //general includes
 #include <stdio.h>
@@ -33,6 +31,7 @@ Code Lines:
 #define LCD_NUM_VIS_COLUMNS 20
 
 i2c_lcd1602_info_t *lcd_info;
+int temp;
 
 //initialize i2c master
 static void i2c_master_init(void)
@@ -69,6 +68,7 @@ static uint8_t _wait_for_user(void)
     return c;
 }
 
+//task for screen
 void lcd1602_task(void *pvParameter)
 {
     smbus_info_t *smbus_info = smbus_malloc();
@@ -85,19 +85,57 @@ void lcd1602_task(void *pvParameter)
     i2c_lcd1602_clear(lcd_info);
 
     //draw initial screen
+    char tempstring[8];
+    itoa(temp, tempstring, 10);
+    strcat(tempstring, "C");
     i2c_lcd1602_move_cursor(lcd_info, 0, 0);
     i2c_lcd1602_write_string(lcd_info, "Het weer");
     i2c_lcd1602_move_cursor(lcd_info, 0, 1);
     i2c_lcd1602_write_string(lcd_info, "Temperatuur:");
     i2c_lcd1602_move_cursor(lcd_info, 0, 2);
-    i2c_lcd1602_write_string(lcd_info, "20C");
+    i2c_lcd1602_write_string(lcd_info, tempstring);
     i2c_lcd1602_move_cursor(lcd_info, 0, 3);
     i2c_lcd1602_write_string(lcd_info, "-----");
     vTaskDelete(NULL);
 }
 
+//task for sensor
+//FULLY WRITTEN
+void sensor_task(void *pvParameters)
+{
+    TickType_t xLastWakeTime;
+    const TickType_t xFrequency = 100;
+    while (1)
+    {
+        xLastWakeTime = xTaskGetTickCount();
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        temp = temp + 1;
+        if (temp > 100)
+        {
+            temp = 100;
+        }
+        char tempstring[8];
+        itoa(temp, tempstring, 10);
+        strcat(tempstring, "C");
+        
+
+        i2c_lcd1602_clear(lcd_info);
+        i2c_lcd1602_move_cursor(lcd_info, 0, 0);
+        i2c_lcd1602_write_string(lcd_info, "Het weer");
+        i2c_lcd1602_move_cursor(lcd_info, 0, 1);
+        i2c_lcd1602_write_string(lcd_info, "Temperatuur:");
+        i2c_lcd1602_move_cursor(lcd_info, 0, 2);
+        i2c_lcd1602_write_string(lcd_info, tempstring);
+        i2c_lcd1602_move_cursor(lcd_info, 0, 3);
+        i2c_lcd1602_write_string(lcd_info, "-----");
+    }
+    
+}
+
 void app_main()
 {
+    temp = 20;
     i2c_master_init();
     xTaskCreate(&lcd1602_task, "LCD_task", 1024 * 2, NULL, 1, NULL);
+    xTaskCreate(&sensor_task, "sensor_task", 1024 * 2, NULL, 1, NULL);
 }

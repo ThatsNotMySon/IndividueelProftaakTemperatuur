@@ -140,6 +140,31 @@ void sensor_task(void *pvParameters)
     
 }
 
+
+void test_lcd_task(void *pvParameters)
+{
+    TickType_t xLastWakeTime;
+    const TickType_t xFrequency = 1000;
+    while (1)
+    {
+        xLastWakeTime = xTaskGetTickCount();
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        temp = temp + 1;
+        char tempstring[8];
+        itoa(temp, tempstring, 10);
+        strcat(tempstring, "C");
+
+        i2c_lcd1602_clear(lcd_info);
+        i2c_lcd1602_move_cursor(lcd_info, 0, 0);
+        i2c_lcd1602_write_string(lcd_info, "Het weer");
+        i2c_lcd1602_move_cursor(lcd_info, 0, 1);
+        i2c_lcd1602_write_string(lcd_info, "Temperatuur:");
+        i2c_lcd1602_move_cursor(lcd_info, 0, 2);
+        i2c_lcd1602_write_string(lcd_info, tempstring);
+        i2c_lcd1602_move_cursor(lcd_info, 0, 3);
+        i2c_lcd1602_write_string(lcd_info, "-----");
+    }
+}
 void app_main()
 {
     temp = 20;
@@ -147,4 +172,5 @@ void app_main()
     tempInit(&mcp23017);
     xTaskCreate(&lcd1602_task, "LCD_task", 1024 * 2, NULL, 1, NULL);
     xTaskCreate(&sensor_task, "sensor_task", 1024 * 2, NULL, 1, NULL);
+    // xTaskCreate(&test_lcd_task, "test_task", 1024 * 2, NULL, 1, NULL);
 }

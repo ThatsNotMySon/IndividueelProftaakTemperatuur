@@ -121,11 +121,7 @@ void sensor_task(void *pvParameters)
     {
         xLastWakeTime = xTaskGetTickCount();
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
-        temp = temp + 1;
-        if (temp > 100)
-        {
-            temp = 100;
-        }
+        temp = readTemp11(GPIOA);
         char tempstring[8];
         itoa(temp, tempstring, 10);
         strcat(tempstring, "C");
